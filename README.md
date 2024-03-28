@@ -2,7 +2,7 @@
 # Ebiten
 This project are build just for learning purpose.
 
-### demo until now
+### Demo until now
 
 ![](demo.gif)
   
@@ -13,14 +13,12 @@ This project are build just for learning purpose.
 	-  [X] Moveable
 	-  [X] Alternate images from sheet
 	-  [X] Draw image box for debug purpose
-
 -  [X]   Player
  	-  [X]  Attributes
  	-  [X]  Events
  	-  [X]  Life cycle
  	- [X] Move
  	- [X] Jump
- 
  -  [X]  Logs 
  -  [X]  Gravity
  -  [X]  Stage
