@@ -26,7 +26,7 @@ This project are build just for learning purpose.
  -  [X]  Stage
 	 -  [X]  Add Bounds
 	 -  [X] Manage stages 
- -  [X] Colision
+ -  [X] Collision
  -  [X]  Fonts
 	 - [X]  Custom external fonts
   	-  [X] Colored Font
