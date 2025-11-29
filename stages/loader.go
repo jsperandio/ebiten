@@ -2,6 +2,7 @@ package stages
 
 import (
 	"github.com/jsperandio/ebiten/core"
+	"github.com/jsperandio/ebiten/stages/gameover"
 	"github.com/jsperandio/ebiten/stages/mainmenu"
 	"github.com/jsperandio/ebiten/stages/stage1"
 )
@@ -26,6 +27,8 @@ func GetStage(name string) *core.Stage {
 	case "Moss Cavern":
 		stage1.MossBgPng = MossBgPng
 		return stage1.Init()
+	case "Game Over":
+		return gameover.Init()
 	}
 	return nil
 }

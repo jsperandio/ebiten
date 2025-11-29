@@ -55,6 +55,10 @@ func init() {
 	})
 	MainGame.AddStage(stages.GetStage("Main Menu"), false)
 	MainGame.AddStage(stages.GetStage("Moss Cavern"), true)
+	MainGame.AddStage(stages.GetStage("Game Over"), false)
+	
+	// Register player with GameFlow to receive death notifications
+	MainGame.MainPlayer.Register("GameFlow", MainGame.GameFlow)
 }
 
 func main() {

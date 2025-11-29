@@ -1,6 +1,7 @@
 package core
 
 import (
+	"bytes"
 	"fmt"
 	"image"
 	"strings"
@@ -348,6 +349,9 @@ func (p *Player) Die() {
 	p.setDeathAnimation()
 	time.Sleep(400 * time.Millisecond)
 	p.CoreAnimatedImage.Img.Clear()
+
+	// Notify GameFlow that player died
+	p.Notify("GameFlow", "PlayerDied")
 }
 
 // Get player Positions
@@ -359,6 +363,22 @@ func (p *Player) GetPosition() image.Point {
 func (p *Player) setDeathAnimation() {
 	p.CoreAnimatedImage.FrameOX = 32
 	p.CoreAnimatedImage.FrameOY = 50
+}
+
+// RestoreImage restores the player image from the raw sprite sheet bytes
+func (p *Player) RestoreImage() {
+	if len(p.RawImage) == 0 {
+		return
+	}
+
+	// Recreate the image from raw bytes
+	sceneDecoded, _, err := image.Decode(bytes.NewReader(p.RawImage))
+	if err != nil {
+		log.Error("Failed to restore player image: ", err)
+		return
+	}
+
+	p.Img = ebiten.NewImageFromImage(sceneDecoded)
 }
 
 func (p *Player) Register(id string, observer Observer) {

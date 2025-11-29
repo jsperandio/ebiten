@@ -1,4 +1,4 @@
-package mainmenu
+package gameover
 
 import (
 	"image/color"
@@ -21,22 +21,13 @@ type menuButton struct {
 	hovered     bool
 }
 
-func NewStartGameObject() *menuButton {
+func NewReturnToMenuObject() *menuButton {
 	w := float64(core.ScreenWidth / 4)
 	h := 50.0
 	posx := float64(core.ScreenWidth/2) - (w / 2)
-	posy := float64(core.ScreenHeight/4) - (h / 2)
+	posy := float64(core.ScreenHeight*2/3) - (h / 2)
 
-	return newMenuButton("StartGameButton", "START", "StartGame", posx, posy, w, h)
-}
-
-func NewExitGameObject() *menuButton {
-	w := float64(core.ScreenWidth / 4)
-	h := 50.0
-	posx := float64(core.ScreenWidth/2) - (w / 2)
-	posy := float64(core.ScreenHeight/2) - (h / 2)
-
-	return newMenuButton("ExitGameButton", "EXIT", "ExitGame", posx, posy, w, h)
+	return newMenuButton("ReturnToMenuButton", "RETURN TO MENU", "ReturnToMenu", posx, posy, w, h)
 }
 
 func newMenuButton(name, label, spaceTag string, x, y, w, h float64) *menuButton {

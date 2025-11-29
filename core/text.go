@@ -5,7 +5,7 @@ import (
 
 	"github.com/golang/freetype/truetype"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/text"
+	textv2 "github.com/hajimehoshi/ebiten/v2/text/v2"
 	localfonts "github.com/jsperandio/ebiten/assets/fonts"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/image/font"
@@ -75,21 +75,39 @@ type DrawTextOptions struct {
 }
 
 func DrawText(target *ebiten.Image, txt string, x, y int, clr color.Color, fontSize FontSize) {
-	text.Draw(target, txt, FontMap[fontSize], x, y, clr)
+	face := textv2.NewGoXFace(FontMap[fontSize])
+	
+	// text/v2 uses different coordinate system - need to adjust Y position
+	// The old text API used baseline as Y coordinate, text/v2 uses top-left of rendering region
+	// Convert from baseline to top by subtracting HAscent
+	metrics := face.Metrics()
+	adjustedY := float64(y) - metrics.HAscent
+	
+	opts := &textv2.DrawOptions{}
+	opts.GeoM.Translate(float64(x), adjustedY)
+	opts.ColorScale.ScaleWithColor(clr)
+	textv2.Draw(target, txt, face, opts)
 }
 
 func DrawTextWithOptions(target *ebiten.Image, txt string, x, y int, opts DrawTextOptions) {
 	f := FontMap[opts.FontSize]
 	c := opts.Color
 	r, _ := font.BoundString(f, txt)
-	x2 := 0
-	y2 := 0
+	x2 := 0.0
+	y2 := 0.0
 	if opts.HAligh == HAlignLeft {
-		x2 = int(-r.Min.X) + x
-		y2 = int(-r.Min.Y) + y
+		x2 = float64(int(-r.Min.X) + x)
+		y2 = float64(int(-r.Min.Y) + y)
 	} else if opts.HAligh == HAlignCenter {
-		x2 = x - int((r.Max.X-r.Min.X)/2)
-		y2 = y + int((r.Max.Y-r.Min.Y)/2)
+		x2 = float64(x - int((r.Max.X-r.Min.X)/2))
+		y2 = float64(y + int((r.Max.Y-r.Min.Y)/2))
 	}
-	text.Draw(target, txt, f, x2, y2, c)
+	face := textv2.NewGoXFace(f)
+	// Convert from baseline (old API) to top-left (text/v2) by subtracting HAscent
+	metrics := face.Metrics()
+	adjustedY2 := y2 - metrics.HAscent
+	drawOpts := &textv2.DrawOptions{}
+	drawOpts.GeoM.Translate(x2, adjustedY2)
+	drawOpts.ColorScale.ScaleWithColor(c)
+	textv2.Draw(target, txt, face, drawOpts)
 }

@@ -16,6 +16,11 @@ type MouseHandler interface {
 	OnMiddleClick()
 }
 
+type MouseHoverHandler interface {
+	OnMouseEnter()
+	OnMouseLeave()
+}
+
 type StageObject interface {
 	Name() string
 	SpaceObject() *resolv.Object
@@ -36,6 +41,7 @@ type Stage struct {
 	runningEventCount int
 	player            *Player
 	observers         map[string]Observer
+	hoverHandler      MouseHoverHandler
 }
 
 func NewStage(name string, backgroud *Scene, space *resolv.Space, gravity float64) *Stage {
@@ -157,42 +163,66 @@ func (s *Stage) runEvents() {
 }
 
 func (s *Stage) handleMouse() {
-	var o *resolv.Object = nil
-
 	cx, cy := ebiten.CursorPosition()
-	if o = s.StageSpace.CheckCells(cx, cy, 1, 1); o == nil {
+	o := s.StageSpace.CheckCells(cx, cy, 1, 1)
+	if o == nil {
+		s.updateHover(nil)
 		return
 	}
 
-	omh := s.getObjectWithMouseHandler(o.Tags())
-	if omh == nil {
+	target := s.getStageObjectByTags(o.Tags())
+	if target == nil {
+		s.updateHover(nil)
+		return
+	}
+
+	s.updateHover(target)
+
+	mh, ok := target.(MouseHandler)
+	if !ok {
 		return
 	}
 
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-		omh.OnClick()
+		mh.OnClick()
 	}
 
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonRight) {
-		omh.OnRightClick()
+		mh.OnRightClick()
 	}
 
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonMiddle) {
-		omh.OnMiddleClick()
+		mh.OnMiddleClick()
 	}
 }
 
-// func (s *Stage) ApplyGravity() {
-// 	// s.CurrPlayer.ApplyGravity(s.Gravity)
-// }
+func (s *Stage) updateHover(target StageObject) {
+	var next MouseHoverHandler
+	if target != nil {
+		if hoverable, ok := target.(MouseHoverHandler); ok {
+			next = hoverable
+		}
+	}
 
-func (s *Stage) getObjectWithMouseHandler(tags []string) MouseHandler {
+	if s.hoverHandler == next {
+		return
+	}
+
+	if s.hoverHandler != nil {
+		s.hoverHandler.OnMouseLeave()
+	}
+
+	s.hoverHandler = next
+
+	if s.hoverHandler != nil {
+		s.hoverHandler.OnMouseEnter()
+	}
+}
+
+func (s *Stage) getStageObjectByTags(tags []string) StageObject {
 	for _, o := range s.StageObjects {
 		if o.SpaceObject().HasTags(tags...) {
-			if mh, ok := o.(MouseHandler); ok {
-				return mh
-			}
-			return nil
+			return o
 		}
 	}
 	return nil

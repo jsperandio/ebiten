@@ -6,7 +6,7 @@ const (
 	LifeDecreaseDamageMultiplier = 2
 	LifeDecreaseInterval         = 1 * time.Second
 
-	HungerIncreaseValue    = 2
+	HungerIncreaseValue    = 1
 	HungerIncreaseInterval = 5 * time.Second
 
 	CeilObjectLabel  = "ceil"

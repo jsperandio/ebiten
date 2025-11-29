@@ -76,7 +76,9 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.GameFlow.Draw(screen, g.tick)
 
-	if g.GameFlow.Current > 0 {
+	// Only draw GUI on actual game stages (not main menu or game over)
+	currentStage := g.GameFlow.CurrentStage()
+	if currentStage != nil && currentStage.Name != "Main Menu" && currentStage.Name != "Game Over" {
 		g.GUI.Draw(screen, g.tick)
 	}
 
